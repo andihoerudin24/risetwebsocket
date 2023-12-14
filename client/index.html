@@ -9,30 +9,38 @@
     <div id="status">Menunggu koneksi...</div>
     <div id="messages"></div>
      <input type="text" id="messageInput" placeholder="Masukkan pesan">
-    <button id="sendButton">Kirim</button>
+     <button id="sendButton">Kirim</button>
+ 
+   <div id="bufferedAmount">Jumlah data yang masih dalam antrian: 0 byte</div>
+
 
 
     <script>
         const socket = new WebSocket('ws://localhost:3000');
 
-        // Menangani perubahan status koneksi
         socket.addEventListener('open', () => {
             document.getElementById('status').innerText = 'Terhubung ke server';
-        });
+            setInterval(() => {
+                const message = 'Pesan ke server';
+                console.log('Mengirim pesan:', message);
+                
+                socket.send(message);
+                 }, 1000);
+                 updateBufferedAmount();
+            });
 
         socket.addEventListener('close', () => {
             document.getElementById('status').innerText = 'Koneksi ditutup';
         });
 
-        // Menangani pesan dari server
         socket.addEventListener('message', (event) => {
             const messagesDiv = document.getElementById('messages');
             const message = document.createElement('p');
             message.textContent = `Menerima pesan: ${event.data}`;
             messagesDiv.appendChild(message);
+            updateBufferedAmount();
         });
 
-        // Event listener untuk memantau bufferedAmount
         socket.addEventListener('bufferedamount', () => {
             console.log('Jumlah data yang masih dalam antrian:', socket.bufferedAmount);
         });
@@ -42,6 +50,12 @@
             const messageToSend = document.getElementById('messageInput').value;
             socket.send(messageToSend);
         });
+
+        function updateBufferedAmount() {
+            const bufferedAmountDiv = document.getElementById('bufferedAmount');
+            bufferedAmountDiv.innerText = `Jumlah data yang masih dalam antrian: ${socket.bufferedAmount} byte`;
+        }
+
     </script>
 </body>
 </html>

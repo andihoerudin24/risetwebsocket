@@ -9,8 +9,9 @@ server.on('connection', (socket) => {
     // Event listener ketika klien mengirim pesan
     socket.on('message', (message) => {
         console.log('Menerima pesan:', message);
+        console.log(socket.bufferedAmount)
 
         // Kirim balik pesan ke klien
-        socket.send('Pesan diterima');
+        socket.send('Pesan diterima dari server andi');
     });
 });
