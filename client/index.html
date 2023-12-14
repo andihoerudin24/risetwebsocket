@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Client</title>
+</head>
+<body>
+    <div id="status">Menunggu koneksi...</div>
+    <div id="messages"></div>
+     <input type="text" id="messageInput" placeholder="Masukkan pesan">
+    <button id="sendButton">Kirim</button>
+
+
+    <script>
+        const socket = new WebSocket('ws://localhost:3000');
+
+        // Menangani perubahan status koneksi
+        socket.addEventListener('open', () => {
+            document.getElementById('status').innerText = 'Terhubung ke server';
+        });
+
+        socket.addEventListener('close', () => {
+            document.getElementById('status').innerText = 'Koneksi ditutup';
+        });
+
+        // Menangani pesan dari server
+        socket.addEventListener('message', (event) => {
+            const messagesDiv = document.getElementById('messages');
+            const message = document.createElement('p');
+            message.textContent = `Menerima pesan: ${event.data}`;
+            messagesDiv.appendChild(message);
+        });
+
+        // Event listener untuk memantau bufferedAmount
+        socket.addEventListener('bufferedamount', () => {
+            console.log('Jumlah data yang masih dalam antrian:', socket.bufferedAmount);
+        });
+
+        // Mengirim pesan ke server saat tombol diklik
+        document.getElementById('sendButton').addEventListener('click', () => {
+            const messageToSend = document.getElementById('messageInput').value;
+            socket.send(messageToSend);
+        });
+    </script>
+</body>
+</html>
